@@ -4,6 +4,13 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
+/*
+ * Keyword: out 
+	The out is a keyword that allows the argument of a method to be passed by reference. 
+It must be a variable to do this as any operation on the parameter is made on the argument, 
+however it does not need to be initialized before being passed. 
+ */
+
 public class NetworkedClient : MonoBehaviour
 {
 
