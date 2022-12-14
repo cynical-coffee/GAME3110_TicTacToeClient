@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -13,30 +14,32 @@ however it does not need to be initialized before being passed.
 
 public class NetworkedClient : MonoBehaviour
 {
+    private TicTacToeManager ticTacToeManager;
 
-    int connectionID;
-    int maxConnections = 1000;
-    int reliableChannelID;
-    int unreliableChannelID;
-    int hostID;
-    int socketPort = 5491;
-    byte error;
-    bool isConnected = false;
-    int ourClientID;
+    private int connectionID;
+    private int maxConnections = 1000;
+    private int reliableChannelID;
+    private int unreliableChannelID;
+    private int hostID;
+    private int socketPort = 5491;
+    private byte error;
+    private bool isConnected = false;
+    private int ourClientID;
 
     // Start is called before the first frame update
     void Start()
     {
+        ticTacToeManager = GameObject.Find("TicTacToeManager").GetComponent<TicTacToeManager>();
         Connect();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-            SendMessageToHost("Hello from client");
+        //if (Input.GetKeyDown(KeyCode.S))
+            //SendMessageToHost("Hello from client");
 
-        UpdateNetworkConnection();
+            UpdateNetworkConnection();
     }
 
     private void UpdateNetworkConnection()
@@ -59,8 +62,7 @@ public class NetworkedClient : MonoBehaviour
                     break;
                 case NetworkEventType.DataEvent:
                     string msg = Encoding.Unicode.GetString(recBuffer, 0, dataSize);
-                    ProcessRecievedMsg(msg, recConnectionID);
-                    //Debug.Log("got msg = " + msg);
+                    ProcessReceivedMsg(msg, recConnectionID);
                     break;
                 case NetworkEventType.DisconnectEvent:
                     isConnected = false;
@@ -86,14 +88,12 @@ public class NetworkedClient : MonoBehaviour
             hostID = NetworkTransport.AddHost(topology, 0);
             Debug.Log("Socket open.  Host ID = " + hostID);
 
-            connectionID = NetworkTransport.Connect(hostID, "192.168.2.11", socketPort, 0, out error); // server is local on network
+            connectionID = NetworkTransport.Connect(hostID, "192.168.2.188", socketPort, 0, out error); // server is local on network
 
             if (error == 0)
             {
                 isConnected = true;
-
                 Debug.Log("Connected, id = " + connectionID);
-
             }
         }
     }
@@ -109,9 +109,33 @@ public class NetworkedClient : MonoBehaviour
         NetworkTransport.Send(hostID, connectionID, reliableChannelID, buffer, msg.Length * sizeof(char), out error);
     }
 
-    private void ProcessRecievedMsg(string msg, int id)
+    private void ProcessReceivedMsg(string msg, int id)
     {
         Debug.Log("msg recieved = " + msg + ".  connection id = " + id);
+
+        if (msg.StartsWith(Signifiers.LoggedInSignifier.ToString()))
+        {
+            StateManager.Instance.state = StateManager.GameState.CREATEGAMEROOM;
+        }
+
+        if (msg.StartsWith(Signifiers.CreatedRoomSignifier.ToString()))
+        {
+            StateManager.Instance.state = StateManager.GameState.GAMEROOM;
+        }
+
+        if (msg.StartsWith(Signifiers.StartGameSignifier.ToString()))
+        {
+            Debug.Log("Player start");
+            //ticTacToeManager.GetPlayerLetter(msg);
+            ticTacToeManager.state = TicTacToeManager.GameState.PLAYERTURN;
+        }
+
+        if (msg.StartsWith(Signifiers.GamePlaySignifier.ToString()))
+        {
+            Debug.Log("processing Opponent Move");
+            //ticTacToeManager.GetPlayerLetter(msg);
+            ticTacToeManager.ProcessOpponentMove(msg);
+        }
     }
 
     public bool IsConnected()
@@ -119,5 +143,8 @@ public class NetworkedClient : MonoBehaviour
         return isConnected;
     }
 
-
+    public int ConnectionID()
+    {
+        return connectionID;
+    }
 }
