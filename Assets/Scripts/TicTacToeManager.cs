@@ -102,6 +102,10 @@ public class TicTacToeManager : MonoBehaviour
     public void ProcessOpponentMove(string receivedMessage)
     {
         string[] opponentMove = receivedMessage.Split(",");
+        if (opponentMove[1] == "X")
+        {
+            player = "O";
+        }
         Debug.Log(opponentMove[1] + opponentMove[2]);
         int slot = Int32.Parse(opponentMove[2]);
         buttonSquares[slot].GetComponentInChildren<TextMeshProUGUI>().text = opponentMove[1];

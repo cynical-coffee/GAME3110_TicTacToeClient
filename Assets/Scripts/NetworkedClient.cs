@@ -126,14 +126,13 @@ public class NetworkedClient : MonoBehaviour
         if (msg.StartsWith(Signifiers.StartGameSignifier.ToString()))
         {
             Debug.Log("Player start");
-            //ticTacToeManager.GetPlayerLetter(msg);
+            ticTacToeManager.GetPlayerLetter(msg);
             ticTacToeManager.state = TicTacToeManager.GameState.PLAYERTURN;
         }
 
         if (msg.StartsWith(Signifiers.GamePlaySignifier.ToString()))
         {
             Debug.Log("processing Opponent Move");
-            //ticTacToeManager.GetPlayerLetter(msg);
             ticTacToeManager.ProcessOpponentMove(msg);
         }
     }
