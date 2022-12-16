@@ -135,6 +135,16 @@ public class NetworkedClient : MonoBehaviour
             Debug.Log("processing Opponent Move");
             ticTacToeManager.ProcessOpponentMove(msg);
         }
+
+        if (msg.StartsWith(Signifiers.WinnerSignifier.ToString()))
+        {
+            ticTacToeManager.WinGame();
+        }
+
+        if (msg.StartsWith(Signifiers.LoserSignifier.ToString()))
+        {
+            ticTacToeManager.LoseGame();
+        }
     }
 
     public bool IsConnected()

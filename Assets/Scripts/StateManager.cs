@@ -14,6 +14,7 @@ public static class Signifiers
     public const int StartGameSignifier = 6;
     public const int GamePlaySignifier = 7;
     public const int WinnerSignifier = 8;
+    public const int LoserSignifier = 9;
 }
 
 public class StateManager : MonoBehaviour

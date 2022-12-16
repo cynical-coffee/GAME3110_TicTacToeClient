@@ -14,6 +14,8 @@ public class TicTacToeManager : MonoBehaviour
     private bool isPlayerTurn;
     private int[] gameBoard;
     [SerializeField] private GameObject buttonGrid;
+    [SerializeField] private TextMeshProUGUI winText;
+    [SerializeField] private TextMeshProUGUI loseText;
 
     public enum GameState
     {
@@ -50,6 +52,12 @@ public class TicTacToeManager : MonoBehaviour
                 isPlayerTurn = true;
                 break;
             case GameState.OPPONENTTURN:
+                isPlayerTurn = false;
+                break;
+            case GameState.WIN:
+                isPlayerTurn = false;
+                break;
+            case GameState.LOSE:
                 isPlayerTurn = false;
                 break;
         }
@@ -141,6 +149,18 @@ public class TicTacToeManager : MonoBehaviour
         int slot = Int32.Parse(opponentMove[2]);
         buttonSquares[slot].GetComponentInChildren<TextMeshProUGUI>().text = opponentMove[1];
         state = GameState.PLAYERTURN;
+    }
+
+    public void WinGame()
+    {
+        state = GameState.WIN;
+        winText.gameObject.SetActive(true);
+    }
+
+    public void LoseGame()
+    {
+        state = GameState.LOSE;
+        loseText.gameObject.SetActive(true);
     }
 
     public void GetPlayerLetter(string receivedMessage)
